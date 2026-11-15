@@ -1,0 +1,387 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Idea to App Playbook</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: one reading column for the story and phases; the catalog breaks out to full width with a sticky filter bar.
+   Tokens borrow steady.'s palette (cream paper, signal red, ink) since this playbook was born from that build. */
+:root {
+  --bg: #f1eedb; --surface: #fffdf3; --sunken: #f6f2e0; --border: #d8d3bb; --border-strong: #c4bea2;
+  --text: #1a1917; --muted: #625f55; --accent: #c4271d; --accent-fill: #df281e; --accent-soft: #f8d9d3; --on-accent: #fff;
+  --free: #2f6f4a; --free-bg: #e2efe3; --tier: #8a5a10; --tier-bg: #f6e8cc; --paid: #8f2a22; --paid-bg: #f6dcd8;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #021861; --surface: #0a286f; --sunken: #0d2f7a; --border: #28417f; --border-strong: #3a5596;
+  --text: #f4f6ff; --muted: #c1c9e1; --accent: #ff8a84; --accent-fill: #de1110; --accent-soft: #153a83; --on-accent: #fff;
+  --free: #8fe0b0; --free-bg: #12423a; --tier: #f2c47a; --tier-bg: #4a3a16; --paid: #ff9d97; --paid-bg: #4f1f2a; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #021861; --surface: #0a286f; --sunken: #0d2f7a; --border: #28417f; --border-strong: #3a5596;
+  --text: #f4f6ff; --muted: #c1c9e1; --accent: #ff8a84; --accent-fill: #de1110; --accent-soft: #153a83; --on-accent: #fff;
+  --free: #8fe0b0; --free-bg: #12423a; --tier: #f2c47a; --tier-bg: #4a3a16; --paid: #ff9d97; --paid-bg: #4f1f2a; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 15px; line-height: 1.55; }
+a { color: var(--accent); }
+.wrap { max-width: 1100px; margin: 0 auto; padding-block: 40px 96px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 32px; }
+.eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+h1 { font-size: clamp(30px, 5vw, 46px); line-height: 1.05; letter-spacing: -.045em; margin: 6px 0 10px; text-wrap: balance; }
+h2 { font-size: 24px; letter-spacing: -.025em; margin: 0; text-wrap: balance; }
+h3 { font-size: 16px; margin: 0; }
+p { margin: 0; max-width: 68ch; }
+.lede { font-size: 17px; color: var(--muted); }
+.hero { display: grid; gap: 14px; }
+.start { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 14px 16px; border: 1px dashed var(--border-strong); border-radius: 14px; background: var(--surface); }
+.start code { font-family: var(--mono); font-size: 14px; background: var(--sunken); padding: 6px 10px; border-radius: 8px; }
+.start small { color: var(--muted); font-size: 13px; }
+nav.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+nav.toc a { font-size: 13px; font-weight: 600; text-decoration: none; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 6px 12px; }
+section { display: grid; gap: 16px; min-width: 0; }
+.section-head { display: grid; gap: 4px; }
+.section-head p { color: var(--muted); }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; min-width: 0; }
+
+/* Build story timeline */
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.timeline li { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 14px; position: relative; padding-bottom: 18px; }
+.timeline li:not(:last-child)::before { content: ""; position: absolute; left: 21px; top: 40px; bottom: 0; width: 2px; background: var(--border); }
+.step-no { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-weight: 700; font-variant-numeric: tabular-nums; background: var(--accent-soft); color: var(--accent); }
+.step-body { display: grid; gap: 6px; padding-top: 2px; }
+.step-body h3 { font-size: 16px; }
+.step-body p { font-size: 14px; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--sunken); border: 1px solid var(--border); white-space: nowrap; }
+.lesson { font-size: 13px; color: var(--text); background: var(--sunken); border-radius: 10px; padding: 8px 10px; }
+.lesson b { color: var(--accent); }
+
+/* Phases */
+.phases { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+.phase { display: grid; gap: 10px; align-content: start; }
+.phase-top { display: flex; align-items: center; gap: 10px; }
+.phase-no { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--on-accent); background: var(--accent-fill); border-radius: 8px; padding: 3px 8px; }
+.phase h3 { font-size: 18px; letter-spacing: -.02em; }
+.role { font-size: 12px; color: var(--muted); font-weight: 600; }
+.phase ul { margin: 0; padding-left: 18px; font-size: 14px; display: grid; gap: 4px; }
+.gate { border-top: 1px solid var(--border); padding-top: 10px; display: grid; gap: 4px; font-size: 13px; }
+.gate b { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.tools { font-size: 12px; color: var(--muted); }
+
+/* Modes and setup */
+.modes { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.mode { display: grid; gap: 2px; padding: 10px 14px; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); font-size: 14px; }
+.mode b { color: var(--accent); margin-right: 6px; }
+.mode small { font-size: 12px; color: var(--muted); }
+.mode-arrow { color: var(--muted); font-size: 18px; }
+.setup-intro { font-size: 16px; font-weight: 600; }
+.setup-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.setup-col { display: grid; gap: 10px; align-content: start; }
+.setup-list { margin: 0; padding-left: 20px; display: grid; gap: 8px; font-size: 14px; }
+.setup-list li span { display: block; }
+.setup-list small { color: var(--muted); font-size: 12px; }
+
+
+/* Tabs */
+.tabs { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); position: sticky; top: env(safe-area-inset-top, 0px); z-index: 6; overflow-x: auto; }
+.tabs [role="tab"] { flex: 1 1 auto; font: inherit; font-size: 14px; font-weight: 600; padding: 10px 12px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); cursor: pointer; white-space: nowrap; }
+.tabs [role="tab"][aria-selected="true"] { background: var(--text); color: var(--bg); }
+.tabs [role="tab"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.panel { display: grid; gap: 32px; }
+.panel[hidden] { display: none; }
+/* Steps */
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.step { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 16px; align-items: start; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px 20px; }
+.step-num { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; font-size: 20px; font-weight: 700; color: var(--on-accent); background: var(--accent-fill); }
+.step-copy { display: grid; gap: 8px; min-width: 0; }
+.step-copy h3 { font-size: 18px; letter-spacing: -.02em; }
+.step dl { margin: 0; display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 6px 10px; font-size: 14px; }
+.step dt { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding-top: 2px; }
+.step dd { margin: 0; }
+.behind { display: grid; gap: 8px; }
+.behind h2 { font-size: 18px; }
+.behind p { color: var(--muted); font-size: 14px; }
+.stack-card { display: grid; gap: 14px; }
+.results { display: grid; gap: 22px; }
+.filters { top: calc(env(safe-area-inset-top, 0px) + 60px); }
+@media (max-width: 520px) { .tabs [role="tab"] { font-size: 13px; padding: 9px 8px; } .step { grid-template-columns: 1fr; gap: 10px; padding: 16px; } .step-num { width: 40px; height: 40px; font-size: 17px; } .step dl { grid-template-columns: 1fr; gap: 2px; } .step dd { margin-bottom: 6px; } }
+
+/* Archetypes */
+.arch-tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.arch-tabs button { font: inherit; font-size: 13px; font-weight: 600; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; }
+.arch-tabs button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.arch-desc { color: var(--muted); font-size: 14px; }
+.stack-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; }
+.stack-item { background: var(--sunken); border-radius: 12px; padding: 10px 12px; display: grid; gap: 4px; min-width: 0; }
+.stack-item small { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.stack-item strong { font-size: 14px; overflow-wrap: anywhere; }
+
+/* Catalog */
+.filters { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; display: grid; grid-template-columns: minmax(180px, 1.4fr) repeat(3, minmax(140px, 1fr)); gap: 10px; align-items: end; padding: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 6px 20px rgba(0,0,0,.06); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.field { display: grid; gap: 4px; min-width: 0; }
+.field label, .field > span { font-size: 12px; font-weight: 600; color: var(--muted); }
+.field input[type="search"], .field select { width: 100%; height: 40px; padding: 0 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--text); font: inherit; font-size: 15px; }
+.toggles { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.toggle { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; padding: 6px 10px; border: 1px solid var(--border); border-radius: 999px; background: var(--bg); cursor: pointer; }
+.toggle input { accent-color: var(--accent-fill); margin: 0; }
+.count { margin-left: auto; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.cat-group { display: grid; gap: 10px; }
+.cat-group h3 { font-size: 15px; display: flex; align-items: baseline; gap: 8px; }
+.cat-group h3 span { font-size: 12px; color: var(--muted); font-weight: 500; }
+.opts { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+.opt { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.opt.rec { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.opt-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.opt-top a { font-weight: 700; font-size: 15px; text-decoration: none; color: var(--text); overflow-wrap: anywhere; }
+.opt-top a:hover { text-decoration: underline; }
+.stars { font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--muted); white-space: nowrap; }
+.opt p { font-size: 13px; color: var(--muted); }
+.badges { display: flex; flex-wrap: wrap; gap: 6px; }
+.badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.b-free { color: var(--free); background: var(--free-bg); }
+.b-free-tier { color: var(--tier); background: var(--tier-bg); }
+.b-paid { color: var(--paid); background: var(--paid-bg); }
+.b-oss { color: var(--text); background: var(--sunken); border: 1px solid var(--border); }
+.b-rec { color: var(--on-accent); background: var(--accent-fill); }
+.empty { padding: 24px; text-align: center; color: var(--muted); background: var(--surface); border: 1px dashed var(--border-strong); border-radius: 14px; }
+.legend { font-size: 12px; color: var(--muted); }
+
+/* Rules */
+.rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; counter-reset: rule; list-style: none; padding: 0; margin: 0; }
+.rules li { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; font-size: 14px; display: grid; gap: 4px; }
+.rules li b { font-size: 14px; }
+.rules li span { color: var(--muted); font-size: 13px; }
+footer { font-size: 12px; color: var(--muted); }
+@media (max-width: 760px) {
+  .filters { grid-template-columns: 1fr 1fr; position: static; }
+  .filters .field:first-child { grid-column: 1 / -1; }
+  .count { margin-left: 0; width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="hero">
+    <div class="eyebrow">Think · Design · Build · Ship</div>
+    <h1>Idea to App Playbook</h1>
+    <p class="lede">From a rough idea to an app on your phone. You think about what the app should do; Claude handles the design, the setup and the code.</p>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="Playbook sections">
+    <button type="button" role="tab" id="tab-playbook" aria-controls="panel-playbook" data-tab="playbook">Playbook</button>
+    <button type="button" role="tab" id="tab-catalog" aria-controls="panel-catalog" data-tab="catalog">Stack catalog</button>
+    <button type="button" role="tab" id="tab-steady" aria-controls="panel-steady" data-tab="steady">steady. story</button>
+  </div>
+
+  <!-- Playbook -->
+  <div class="panel" role="tabpanel" id="panel-playbook" aria-labelledby="tab-playbook">
+    <div class="start"><code>I have an app idea: …</code><small>Say this in a new, empty project folder in Claude Code. That's the only thing you need to remember.</small></div>
+
+    <section aria-labelledby="h-steps">
+      <div class="section-head"><div class="eyebrow">Six steps</div><h2 id="h-steps">Idea to deployable app</h2><p>Example throughout: an app to track when you water your plants.</p></div>
+      <ol class="steps" id="stepList"></ol>
+    </section>
+
+    <section aria-labelledby="h-setup">
+      <div class="section-head"><div class="eyebrow">Step 4, up close</div><h2 id="h-setup">What setup asks of you</h2><p>Only what truly needs a person is yours. Accounts for features you haven't built yet wait until you need them.</p></div>
+      <p class="setup-intro" id="setupIntro"></p>
+      <div class="setup-cols">
+        <div class="card setup-col"><h3>You, in a browser</h3><ol class="setup-list" id="setupYou"></ol></div>
+        <div class="card setup-col"><h3>Claude, automatically</h3><ul class="setup-list" id="setupClaude"></ul></div>
+        <div class="card setup-col"><h3>Later, only when needed</h3><ul class="setup-list" id="setupLater"></ul></div>
+      </div>
+    </section>
+
+    <section aria-labelledby="h-behind" class="card behind">
+      <h2 id="h-behind">Behind the scenes</h2>
+      <p>You never have to manage any of this. Claude keeps a small plan file in your project with the decisions, the setup checklist and the feature list, so every new session picks up where the last one stopped. Tools are chosen from the <a href="#catalog" data-tab-link="catalog">stack catalog</a>, and the design follows rules that tests enforce. Nothing is deployed or committed until you say so.</p>
+    </section>
+  </div>
+
+  <!-- Stack catalog -->
+  <div class="panel" role="tabpanel" id="panel-catalog" aria-labelledby="tab-catalog" hidden>
+    <section aria-labelledby="h-stacks">
+      <div class="section-head"><div class="eyebrow">Starting points</div><h2 id="h-stacks">Recommended stacks by app type</h2><p>Claude starts from the closest app type, then adjusts each choice with you.</p></div>
+      <div class="card stack-card">
+        <div class="arch-tabs" role="group" aria-label="App type" id="archTabs"></div>
+        <p class="arch-desc" id="archDesc"></p>
+        <div class="stack-grid" id="stackGrid"></div>
+      </div>
+    </section>
+    <section aria-labelledby="h-catalog">
+      <div class="section-head"><div class="eyebrow">Choose with eyes open</div><h2 id="h-catalog">Stack catalog</h2><p>Relatively popular options only. <span id="capturedNote"></span></p></div>
+    <div class="filters" role="search">
+      <div class="field"><label for="q">Search</label><input id="q" type="search" placeholder="Postgres, auth, Vercel…" autocomplete="off"></div>
+      <div class="field"><label for="cat">Category</label><select id="cat"><option value="">All categories</option></select></div>
+      <div class="field"><label for="arch">Highlight for</label><select id="arch"><option value="">No app type</option></select></div>
+      <div class="field"><label for="sort">Sort by</label><select id="sort"><option value="stars">GitHub stars</option><option value="rec">Recommended first</option><option value="name">Name</option><option value="price">Cheapest first</option></select></div>
+      <div class="toggles">
+        <label class="toggle"><input type="checkbox" id="fFree"> Free only</label>
+        <label class="toggle"><input type="checkbox" id="fTier"> Free or free tier</label>
+        <label class="toggle"><input type="checkbox" id="fOss"> Open source</label>
+        <label class="toggle"><input type="checkbox" id="fRec"> Recommended only</label>
+        <span class="count" id="count" aria-live="polite"></span>
+      </div>
+    </div>
+    <p class="legend"><span class="badge b-free">Free</span> free or open source · <span class="badge b-free-tier">Free tier</span> managed, with a free plan · <span class="badge b-paid">Paid</span> paid or usage-based only. Stars appear only where the GitHub repository is the product itself. Confirm current pricing on the vendor's site.</p>
+    <p class="legend"><span class="badge b-free">Free</span> free or open source · <span class="badge b-free-tier">Free tier</span> managed, with a free plan · <span class="badge b-paid">Paid</span> paid or usage-based only. Stars appear only where the GitHub repository is the product itself. Confirm current pricing on the vendor's site.</p>
+      <div id="results" class="results"></div>
+    </section>
+  </div>
+
+  <!-- steady. story -->
+  <div class="panel" role="tabpanel" id="panel-steady" aria-labelledby="tab-steady" hidden>
+    <section aria-labelledby="h-story">
+      <div class="section-head"><div class="eyebrow">Case study</div><h2 id="h-story">How steady. was built</h2><p>A personal workout and rehab tracker, from a static prototype to a synced, installable app with a design system. This build is where the playbook came from.</p></div>
+      <div class="card"><ol class="timeline" id="timeline"></ol></div>
+    </section>
+    <section aria-labelledby="h-rules">
+      <div class="section-head"><div class="eyebrow">Learned the hard way</div><h2 id="h-rules">Rule book</h2><p>The rules Claude now follows on every project, each from a real moment in this build.</p></div>
+      <ol class="rules" id="ruleList"></ol>
+    </section>
+  </div>
+
+  <footer>Catalog data lives in <code>~/.claude/skills/idea-to-app/references/catalog.json</code>. Ask Claude to “refresh the stack catalog” to update stars and options.</footer>
+</div>
+
+<script>
+const CATALOG = __CATALOG__;
+
+const STORY = [
+  { t: "Base app", d: "Started from a static dashboard prototype: plain HTML, CSS and JavaScript, data in the browser's local storage, and a web app manifest plus service worker so it could be installed.", chips: ["HTML/CSS/JS", "localStorage", "PWA"], lesson: "No build step meant we could run and change it instantly." },
+  { t: "Ran it and put it in git", d: "Served locally with a one-line Python server, moved the app into a public/ folder, and initialized git so every change could be undone.", chips: ["python http.server", "git"], lesson: "Set up version control before the first real change." },
+  { t: "Cloud sync and Google sign-in", d: "Added Firebase on the free Spark plan: Google sign-in, Firestore with an offline cache, and security rules so each person can only read their own data. One document per workout lets edits from two devices merge.", chips: ["Firebase Auth", "Firestore", "Security rules"], lesson: "We tested sync with the Firebase emulators and two separate 'devices' before touching real data." },
+  { t: "Made it live", d: "Deployed with Firebase Hosting to steady-workouts.web.app. Set the auth domain to web.app so Google sign-in works in Safari and on iPhone, then imported the workout history through the app's backup import.", chips: ["Firebase Hosting", "OAuth redirect URI"], lesson: "No-cache headers on the HTML stop phones from showing an old version after a deploy." },
+  { t: "Installed on the phone", d: "Added to the home screen as a PWA. A network-first service worker keeps the app working offline while always loading the newest version when online.", chips: ["Add to Home Screen", "Service worker"], lesson: "A PWA avoided the app stores entirely for a personal app." },
+  { t: "Improved the app", d: "Responsive fixes, editable workout types, a custom tracker with its own log, duplicate cleanup, and a chat assistant using Claude Haiku through Cloud Functions (built, switched off until needed).", chips: ["Feature flags", "Cloud Functions", "Claude Haiku"], lesson: "Ship unfinished features behind a switch instead of leaving them half-visible." },
+  { t: "Design rules", d: "Rebuilt the stylesheet on design tokens (color, spacing, radius, type), wrote DESIGN.md and CLAUDE.md, and added tests that fail on stray colors, sizes or inline styles. Adopted the UX-first rule: design decisions are asked, not assumed.", chips: ["Design tokens", "DESIGN.md", "Rule tests"], lesson: "Two '+' icons side by side taught us: one meaning per icon, and ask before building." },
+  { t: "Design library and logo", d: "Built a live design library page that renders every component with the real stylesheet, chose a logo from three concepts, and unified every empty state into one pattern.", chips: ["Design library", "Logo", "Empty states"], lesson: "A library rendered from production CSS can't drift from the app." },
+  { t: "Product and UX review", d: "Reverse-engineered the app as a product manager (features, onboarding flow, inconsistencies) and as a UX designer (design, accessibility and localization gaps), then prioritized fixes.", chips: ["PM review", "Accessibility", "Localization"], lesson: "Reviews found what daily use hid, like three definitions of 'done'." },
+  { t: "Data hygiene", d: "Enforced one session per day, added 'this week only' plan changes, and cleaned real data only after a full backup and a read-back check.", chips: ["Backups", "Data rules"], lesson: "Decide data rules (like uniqueness) in phase 1, not after duplicates appear." },
+];
+
+const STEPS = [
+  { t: "Say the idea", you: "“I have an app idea: an app to track when I water my plants.”", claude: "A one-page brief (who it's for, the main features, how people use it) and a few questions, like “just you, or shared with family?”" },
+  { t: "Shape it", you: "Answer in plain words, for as many rounds as you like. Say “the idea is ready” when it feels right.", claude: "Updates the brief each round, so nothing gets lost." },
+  { t: "Pick a look", you: "Choose one of two or three styles and a logo: “the green one.”", claude: "Shows visual previews based on real inspiration, never a generic template." },
+  { t: "A few sign-ins", you: "About ten minutes of clicks from a short list: sign in here, flip this switch.", claude: "Recommends the tools (mostly free), then creates everything else. You get a live link with sign-in working, installable on your phone." },
+  { t: "Watch the MVP get built", you: "Answer the occasional quick design question.", claude: "Builds each feature you approved, one at a time (add a plant, log a watering, see what's overdue), and shows you each one." },
+  { t: "Ask for changes", you: "“Make the buttons bigger.” “Add reminders.” “Deploy.” Or “what's missing?”", claude: "Builds, tests and ships on your word. “What's missing?” gets you a product and design review." },
+];
+
+const SETUP = {
+  intro: "About 10 minutes for steady. You sign in twice and flip one switch. Claude does the rest.",
+  you: [["Run firebase login and sign in with Google", "1 min"], ["Firebase console: Authentication → Google → Enable", "1 min"], ["Google Cloud: add one redirect URI (exact URL provided)", "2 min"]],
+  claude: ["Create the Firebase project, web app and database", "Write and deploy security rules", "Repo, CLAUDE.md, design system and design library", "Tests with local emulators", "Deploy when you say so, then verify the live site"],
+  later: [["Chat assistant", "Blaze plan and an Anthropic API key"], ["Email", "Resend account and a domain DNS record"], ["Payments", "Stripe account; business details only for going live"], ["Custom domain", "Buy a domain; Claude gives you the DNS records"]],
+};
+
+const ARCHETYPES = [
+  { id: "pwa", name: "Personal web app", d: "One person or a small group, installable on phones, works offline. Like steady." },
+  { id: "saas", name: "SaaS web app", d: "Accounts, a real database, payments and email for many users." },
+  { id: "content", name: "Content or marketing site", d: "Pages, blog or docs edited by non-developers; speed and SEO matter most." },
+  { id: "mobile", name: "Native mobile app", d: "App Store and Play Store, push notifications and in-app purchases." },
+  { id: "ai", name: "AI-powered app", d: "Chat, generation or agents on top of an LLM, with streaming and storage." },
+];
+
+const RULES = [
+  ["Think as a UX designer first", "Check the design rules, then ask the user about every decision they don't settle, with a recommended option."],
+  ["Tokens before features", "Colors, spacing, radius and type live in one token block. Tests fail on anything outside it."],
+  ["One meaning per control", "Chevron means expand, + means add, and never put two icons side by side. Show controls only when they can do something."],
+  ["One empty-state pattern", "A title naming the space, one sentence on what appears there, and an action only if none is nearby."],
+  ["Decide data rules early", "IDs, uniqueness (e.g. one session per day) and the sync model belong in phase 1."],
+  ["Emulators before real services", "Test sync, auth and functions locally with fake data first."],
+  ["Back up before touching data", "Read first, back up to a git-ignored folder, change, then read back to verify."],
+  ["Deploy and commit only when asked", "The user's word starts every deploy and commit."],
+  ["Make updates visible", "Version asset URLs, use no-cache HTML and a network-first service worker."],
+  ["Check phone and desktop, light and dark", "Every UI change is checked at about 375px and 1280px wide, in both themes."],
+  ["Secrets stay server-side", "API keys live in server secrets, and paid endpoints get an allowlist and spend limits."],
+  ["Unfinished features stay hidden", "Use a switch until the backend and the design are ready."],
+  ["Set up once, just in time", "The foundation needs only a few sign-ins; accounts for later features wait until that feature is next."],
+  ["Write it down", "Every decision, with its reason, goes in the state file so later rounds never reopen it by accident."],
+];
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmtStars = n => n >= 1000 ? (n / 1000).toFixed(n >= 100000 ? 0 : 1).replace(/\.0$/, "") + "k" : String(n);
+const PRICE_LABEL = { "free": "Free", "free-tier": "Free tier", "paid": "Paid" };
+const PRICE_ORDER = { "free": 0, "free-tier": 1, "paid": 2 };
+const catName = Object.fromEntries(CATALOG.categories.map(c => [c.id, c.name]));
+
+$("timeline").innerHTML = STORY.map((s, i) => `<li><div class="step-no">${i + 1}</div><div class="step-body"><h3>${esc(s.t)}</h3><p>${esc(s.d)}</p><div class="chips">${s.chips.map(c => `<span class="chip">${esc(c)}</span>`).join("")}</div><div class="lesson"><b>Lesson:</b> ${esc(s.lesson)}</div></div></li>`).join("");
+$("stepList").innerHTML = STEPS.map((s, i) => `<li class="step"><div class="step-num" aria-hidden="true">${i + 1}</div><div class="step-copy"><h3>${esc(s.t)}</h3><dl><dt>You</dt><dd>${esc(s.you)}</dd><dt>Claude</dt><dd>${esc(s.claude)}</dd></dl></div></li>`).join("");
+$("setupIntro").textContent = SETUP.intro;
+$("setupYou").innerHTML = SETUP.you.map(([t, m]) => `<li><span>${esc(t)}</span><small>${esc(m)}</small></li>`).join("");
+$("setupClaude").innerHTML = SETUP.claude.map(t => `<li><span>${esc(t)}</span></li>`).join("");
+$("setupLater").innerHTML = SETUP.later.map(([t, m]) => `<li><span><b>${esc(t)}</b> · ${esc(m)}</span></li>`).join("");
+$("ruleList").innerHTML = RULES.map(([b, s]) => `<li><b>${esc(b)}</b><span>${esc(s)}</span></li>`).join("");
+$("capturedNote").textContent = `GitHub stars captured ${new Date(CATALOG.capturedAt + "T12:00:00").toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })}.`;
+
+// Tabs: Playbook / Stack catalog / How steady. was built (hash: #playbook, #catalog, #steady)
+const TABS = ["playbook", "catalog", "steady"];
+function showTab(name, focus) {
+  if (!TABS.includes(name)) name = "playbook";
+  TABS.forEach(t => {
+    const tab = $("tab-" + t), panel = $("panel-" + t), on = t === name;
+    tab.setAttribute("aria-selected", String(on)); tab.tabIndex = on ? 0 : -1; panel.hidden = !on;
+  });
+  if (focus) $("tab-" + name).focus();
+}
+document.querySelector(".tabs").addEventListener("click", e => { const b = e.target.closest("[data-tab]"); if (b) { showTab(b.dataset.tab); history.replaceState(null, "", "#" + b.dataset.tab); window.scrollTo({ top: 0 }); } });
+document.querySelector(".tabs").addEventListener("keydown", e => {
+  if (!["ArrowLeft", "ArrowRight"].includes(e.key)) return;
+  const cur = TABS.findIndex(t => $("tab-" + t).getAttribute("aria-selected") === "true");
+  const next = TABS[(cur + (e.key === "ArrowRight" ? 1 : TABS.length - 1)) % TABS.length];
+  showTab(next, true); history.replaceState(null, "", "#" + next);
+});
+document.addEventListener("click", e => { const a = e.target.closest("[data-tab-link]"); if (a) { e.preventDefault(); showTab(a.dataset.tabLink); history.replaceState(null, "", "#" + a.dataset.tabLink); window.scrollTo({ top: 0 }); } });
+window.addEventListener("hashchange", () => showTab(location.hash.slice(1)));
+showTab(location.hash.slice(1));
+
+// Recommended stacks by app type
+let archSel = "pwa";
+function renderArch() {
+  $("archTabs").innerHTML = ARCHETYPES.map(a => `<button type="button" aria-pressed="${a.id === archSel}" data-arch="${a.id}">${esc(a.name)}</button>`).join("");
+  const a = ARCHETYPES.find(x => x.id === archSel);
+  $("archDesc").textContent = a.d;
+  const byCat = CATALOG.categories.map(c => ({ c, picks: CATALOG.options.filter(o => o.cat === c.id && o.rec.includes(archSel)) })).filter(x => x.picks.length);
+  $("stackGrid").innerHTML = byCat.map(({ c, picks }) => `<div class="stack-item"><small>${esc(c.name)}</small><strong>${picks.map(p => esc(p.name)).join(" + ")}</strong></div>`).join("");
+}
+$("archTabs").addEventListener("click", e => { const b = e.target.closest("button[data-arch]"); if (b) { archSel = b.dataset.arch; renderArch(); } });
+renderArch();
+
+// Catalog filters
+$("cat").insertAdjacentHTML("beforeend", CATALOG.categories.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join(""));
+$("arch").insertAdjacentHTML("beforeend", ARCHETYPES.map(a => `<option value="${a.id}">${esc(a.name)}</option>`).join(""));
+function renderCatalog() {
+  const q = $("q").value.trim().toLowerCase(), cat = $("cat").value, arch = $("arch").value, sort = $("sort").value;
+  const fFree = $("fFree").checked, fTier = $("fTier").checked, fOss = $("fOss").checked, fRec = $("fRec").checked;
+  let list = CATALOG.options.filter(o =>
+    (!q || (o.name + " " + o.note + " " + catName[o.cat]).toLowerCase().includes(q)) &&
+    (!cat || o.cat === cat) &&
+    (!fFree || o.pricing === "free") &&
+    (!fTier || o.pricing !== "paid") &&
+    (!fOss || o.oss) &&
+    (!fRec || (arch ? o.rec.includes(arch) : o.rec.length)));
+  const isRec = o => arch ? o.rec.includes(arch) : false;
+  const cmp = {
+    stars: (a, b) => (b.stars ?? -1) - (a.stars ?? -1) || a.name.localeCompare(b.name),
+    name: (a, b) => a.name.localeCompare(b.name),
+    price: (a, b) => PRICE_ORDER[a.pricing] - PRICE_ORDER[b.pricing] || (b.stars ?? -1) - (a.stars ?? -1),
+    rec: (a, b) => (isRec(b) - isRec(a)) || (b.rec.length - a.rec.length) || (b.stars ?? -1) - (a.stars ?? -1),
+  }[sort];
+  $("count").textContent = `${list.length} of ${CATALOG.options.length} options`;
+  if (!list.length) { $("results").innerHTML = `<div class="empty">No options match these filters. Try clearing “Free only” or the search.</div>`; return; }
+  const groups = CATALOG.categories.map(c => ({ c, items: list.filter(o => o.cat === c.id).sort(cmp) })).filter(g => g.items.length);
+  $("results").innerHTML = groups.map(({ c, items }) => `<div class="cat-group"><h3>${esc(c.name)} <span>${items.length}</span></h3><div class="opts">${items.map(o => `
+    <article class="opt ${isRec(o) ? "rec" : ""}">
+      <div class="opt-top"><a href="${esc(o.url)}" target="_blank" rel="noopener">${esc(o.name)}</a>${o.stars ? `<span class="stars" title="${o.stars.toLocaleString()} GitHub stars">★ ${fmtStars(o.stars)}</span>` : ""}</div>
+      <p>${esc(o.note)}</p>
+      <div class="badges"><span class="badge b-${o.pricing}">${PRICE_LABEL[o.pricing]}</span>${o.oss ? `<span class="badge b-oss">Open source</span>` : ""}${isRec(o) ? `<span class="badge b-rec">Recommended</span>` : ""}</div>
+    </article>`).join("")}</div></div>`).join("");
+}
+["q", "cat", "arch", "sort", "fFree", "fTier", "fOss", "fRec"].forEach(id => $(id).addEventListener(id === "q" ? "input" : "change", renderCatalog));
+$("fFree").addEventListener("change", () => { if ($("fFree").checked) $("fTier").checked = false; renderCatalog(); });
+$("fTier").addEventListener("change", () => { if ($("fTier").checked) $("fFree").checked = false; renderCatalog(); });
+renderCatalog();
+</script>

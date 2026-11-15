@@ -1,0 +1,6 @@
+{
+  "name": "idea-to-app",
+  "version": "1.0.0",
+  "description": "Take a rough app idea to a deployed app: refine the idea, pick a look, a few sign-ins, an automatic MVP build, then feature rounds.",
+  "author": { "name": "steady. builder" }
+}
